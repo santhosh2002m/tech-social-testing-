@@ -1,0 +1,558 @@
+// Import Montserrat font
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap");
+
+.label-flex {
+  display: flex !important;
+  flex: none !important;
+  color: white;
+}
+
+.label-a {
+  font-weight: 600 !important;
+}
+
+.link {
+  margin: 0 !important;
+}
+
+.custom-style {
+  font-weight: 600 !important;
+}
+
+.action-btn {
+  background-color: black !important;
+  border: 2px solid black !important;
+}
+
+.custom-style-a {
+  font-weight: 600 !important;
+  color: #ef623a !important;
+  margin-bottom: 0 !important;
+}
+
+.checkbox-container p {
+  margin-bottom: 10px !important;
+}
+
+// Define variables for colors, spacing, etc.
+$primary-dark: #1c2526;
+$gradient-start: #ef623a; // Updated to requested color
+$white: #ffffff;
+$gray-400: rgba(
+  156,
+  163,
+  175,
+  0.7
+); // Equivalent to Tailwind's gray-400 with opacity
+$shadow-1: 0 14px 28px rgba(0, 0, 0, 0.25);
+$shadow-2: 0 10px 10px rgba(0, 0, 0, 0.22);
+
+// Breakpoints for responsive design (mimicking Tailwind's breakpoints)
+$sm: 640px;
+$md: 768px;
+$lg: 1024px;
+
+// Base styles
+body {
+  font-family: "Montserrat", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.margin-unset {
+  margin-bottom: 10px !important;
+  margin-top: 2px !important;
+}
+
+// Utility styles
+.container {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background-color: #1c2526;
+  padding: 1rem; // p-4
+
+  @media (min-width: $sm) {
+    padding: 1.25rem; // sm:p-5
+  }
+}
+
+.bg-color {
+  background-color: #1c2526;
+}
+
+.panel-container {
+  position: relative;
+  min-height: 750px;
+  width: 100%;
+  max-width: 768px;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: $primary-dark;
+  box-shadow: $shadow-1, $shadow-2;
+
+  @media (min-width: $md) {
+    min-height: 700px; // md:min-h-[700px]
+  }
+
+  &.right-panel-active {
+    .overlay {
+      transform: translateX(-100%);
+    }
+
+    .overlay-content {
+      transform: translateX(50%);
+    }
+
+    .sign-in {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .sign-up {
+      transform: translateX(100%);
+      opacity: 1;
+      z-index: 5;
+    }
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 100;
+  display: none;
+  height: 100%;
+  width: 50%;
+  overflow: hidden;
+  transition: transform 600ms ease-in-out;
+
+  @media (min-width: $md) {
+    display: block; // md:block
+  }
+}
+
+.overlay-content {
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  background: $gradient-start; // Updated to solid color
+  transition: transform 600ms ease-in-out;
+
+  .panel {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 50%;
+    padding: 0 2rem; // px-8
+    text-align: center;
+    transition: transform 600ms ease-in-out;
+
+    &.left {
+      transform: translateX(-15%);
+      &.active {
+        transform: translateX(0);
+      }
+    }
+
+    &.right {
+      right: 0;
+      transform: translateX(0);
+      &.active {
+        transform: translateX(15%);
+      }
+    }
+
+    h1 {
+      margin-bottom: 1rem; // mb-4
+      font-size: 1.875rem; // text-3xl
+      line-height: 1.25; // leading-tight
+      font-weight: 800; // font-bold
+      color: $white;
+
+      @media (min-width: $sm) {
+        font-size: 2.25rem; // sm:text-4xl
+      }
+
+      @media (min-width: $md) {
+        font-size: 2rem; // md:text-[2rem]
+      }
+
+      @media (min-width: $lg) {
+        font-size: 2.5rem; // lg:text-[2.5rem]
+      }
+    }
+
+    p {
+      margin-bottom: 1rem; // mb-4
+      font-size: 0.875rem; // text-sm
+      line-height: 1.25rem; // leading-5
+      font-weight: 300; // font-light
+      letter-spacing: 0.05em; // tracking-wide
+      color: $white;
+
+      @media (min-width: $sm) {
+        margin-bottom: 1.5rem; // sm:mb-6
+      }
+    }
+
+    button {
+      border-radius: 1rem; // rounded-2xl
+      border: 1px solid $white;
+      background: transparent;
+      padding: 0.75rem 2rem; // py-3 px-8
+      font-size: 0.75rem; // text-xs
+      font-weight: 700; // font-bold
+      letter-spacing: 0.1em; // tracking-wider
+      color: $white;
+      text-transform: uppercase;
+      transition: transform 80ms ease-in;
+
+      &:hover {
+        transform: scale(0.95); // hover:scale-95
+      }
+
+      &:focus {
+        outline: none; // focus:outline-none
+      }
+
+      @media (min-width: $sm) {
+        padding: 0.75rem 3rem; // sm:px-12
+      }
+    }
+  }
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transition: all 600ms ease-in-out;
+
+  @media (min-width: $md) {
+    width: 50%; // md:w-1/2
+  }
+
+  &.sign-in {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2;
+
+    &.hidden {
+      transform: translateX(0);
+      opacity: 0;
+      z-index: 1;
+
+      @media (min-width: $md) {
+        transform: translateX(100%);
+      }
+    }
+  }
+
+  &.sign-up {
+    transform: translateX(0);
+    opacity: 0;
+    z-index: 1;
+
+    @media (min-width: $md) {
+      transform: translateX(0);
+    }
+
+    &.active {
+      transform: translateX(0);
+      opacity: 1;
+
+      @media (min-width: $md) {
+        transform: translateX(100%);
+      }
+    }
+  }
+
+  input::placeholder {
+    color: #ef623a !important;
+    font-size: 1rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    padding: 0 1.25rem; // px-5
+    text-align: center;
+
+    @media (min-width: $sm) {
+      padding: 0 2rem; // sm:px-8
+    }
+
+    @media (min-width: $md) {
+      padding: 0 2.5rem; // md:px-[40px]
+    }
+
+    h1 {
+      margin-bottom: 1rem; // mb-4
+      font-size: 1.875rem; // text-3xl
+      line-height: 1.25; // leading-tight
+      font-weight: 800; // font-bold
+      color: $white;
+
+      @media (min-width: $sm) {
+        margin-bottom: 1.5rem; // sm:mb-6
+        font-size: 2.25rem; // sm:text-4xl
+      }
+
+      @media (min-width: $md) {
+        font-size: 2.5rem; // md:text-[2.5rem]
+      }
+    }
+
+    span,
+    p {
+      margin-bottom: 1.5rem; // mb-6
+      font-size: 0.75rem; // text-xs
+      font-weight: 500; // font-medium
+      color: $white;
+
+      &.description {
+        font-size: 0.875rem; // text-sm
+        line-height: 1.25rem; // leading-5
+        font-weight: 300; // font-light
+        letter-spacing: 0.05em; // tracking-wide
+      }
+    }
+
+    input {
+      margin: 0.5rem 0; // my-2
+      width: 100%; // w-full
+      border-radius: 0.25rem; // rounded
+      border: 1px solid $gradient-start;
+      background-color: #2a3435;
+      padding: 0.75rem 1rem; // py-3 px-4
+      font-size: 0.875rem; // text-sm
+      font-weight: 500; // font-medium
+      color: $white;
+      transition: background-color 0.2s ease; // Added for smooth autofill transition
+
+      &::placeholder {
+        color: $gray-400;
+        opacity: 0.7;
+      }
+
+      &:focus {
+        outline: none;
+        ring: 2px solid $gradient-start; // focus:ring-2 focus:ring-[#ff4b2b]
+      }
+
+      // Override autofill styles
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #2a3435 inset !important;
+        -webkit-text-fill-color: $white !important;
+        background-color: #2a3435 !important;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+
+      @media (min-width: $sm) {
+        padding: 0.875rem 1rem; // sm:py-3.5
+      }
+    }
+
+    a {
+      margin: 1rem 0; // my-4
+      font-size: 0.75rem; // text-xs
+      font-weight: 500; // font-medium
+      color: $white;
+
+      &:hover {
+        text-decoration: underline; // hover:underline
+      }
+    }
+
+    .checkbox-container {
+      margin: 0.5rem 0 2rem 0; // Adjusted to add more space below
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 0.5rem; // gap-2
+      font-size: 0.75rem; // text-xs
+      color: $white;
+      margin-bottom: 0;
+
+      input[type="checkbox"] {
+        height: 1.25rem; // h-5
+        width: 1.25rem; // w-5
+        border-radius: 0.25rem; // rounded
+        accent-color: $gradient-start;
+      }
+
+      label {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        gap: 0.25rem; // gap-1
+
+        span {
+          font-size: 0.75rem; // text-xs
+          font-weight: 500; // font-medium
+        }
+
+        a {
+          font-size: 0.75rem; // text-xs
+          font-weight: 500; // font-medium
+          color: $white;
+
+          &:hover {
+            text-decoration: underline; // hover:underline
+          }
+        }
+      }
+    }
+
+    .btn-margin {
+      padding-top: 1.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      width: 100%;
+      gap: 0.75rem; // gap-3
+
+      &.mobile-only {
+        display: flex;
+
+        @media (min-width: $md) {
+          display: none; // md:hidden
+        }
+      }
+
+      button {
+        flex: 1;
+        border-radius: 1rem; // rounded-2xl
+        border: 1px solid $gradient-start;
+        background: $gradient-start; // Updated to solid color
+        padding: 0.75rem 2rem; // py-3 px-8
+        font-size: 0.75rem; // text-xs
+        font-weight: 700; // font-bold
+        letter-spacing: 0.1em; // tracking-wider
+        color: $white;
+        text-transform: uppercase;
+        transition: transform 80ms ease-in;
+
+        &:hover {
+          transform: scale(0.95); // hover:scale-95
+        }
+
+        &:focus {
+          outline: none; // focus:outline-none
+        }
+
+        @media (min-width: $sm) {
+          // padding: 0.875rem 3rem; // sm:px-12 sm:py-3.5
+        }
+      }
+
+      &.desktop-only {
+        display: none;
+
+        @media (min-width: $md) {
+          display: block; // md:block
+        }
+
+        button {
+          padding: 0.875rem 3rem; // px-12 py-3.5
+        }
+      }
+    }
+  }
+}
+
+.black {
+  color: black !important;
+}
+
+.black-btn {
+  border: 1px solid black !important;
+}
+
+.black-bg {
+  background-color: #2a3435 !important; // Match the background of other inputs
+}
+
+// Added styles for password container with eye icon
+.password-container {
+  position: relative;
+  width: 100%; // Ensure the container takes full width
+}
+
+.password-container input {
+  width: 100%; // Ensure the input takes full width of its container
+  margin: 0.5rem 0; // Match the margin of other inputs
+  border-radius: 0.25rem;
+  border: 1px solid $gradient-start; // Match the border of other inputs
+  background-color: #2a3435; // Match the background of other inputs
+  padding: 0.75rem 2.5rem 0.75rem 1rem; // Adjust padding-right for the eye icon
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $white;
+
+  &::placeholder {
+    color: $gray-400;
+    opacity: 0.7;
+  }
+
+  &:focus {
+    outline: none;
+    ring: 2px solid $gradient-start;
+  }
+
+  // Override autofill styles
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #2a3435 inset !important;
+    -webkit-text-fill-color: $white !important;
+    background-color: #2a3435 !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  @media (min-width: $sm) {
+    padding: 0.875rem 2.5rem 0.875rem 1rem; // Adjust padding for larger screens
+  }
+}
+
+.password-container span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #fff;
+  font-size: 1.2rem;
+  z-index: 10; // Ensure the icon is above the input
+}
+
+// Added styles for profile images to match the previous request
+.avatar-img {
+  border-radius: 50%;
+  border: 2px solid $gradient-start; // 2px solid orange (#ef623a)
+}
+
+.profile-box img {
+  border-radius: 50%;
+  border: 2px solid $gradient-start; // 2px solid orange (#ef623a)
+}
