@@ -1,27 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Add useEffect
+import { useState, useEffect } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { registerUser, verifyOtp, clearError } from "../../store/authSlice";
 import "../../styles/custom.scss";
-import { toast } from "react-toastify"; // Add toast import
+import { toast } from "react-toastify";
 
 export default function SignUp({
   isRightPanelActive,
 }: {
-  isRightPanelActive: boolean,
+  isRightPanelActive: boolean;
 }) {
   const [showOtpForm, setShowOtpForm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState({
     username: "",
-    fullname: "",
     email: "",
     password: "",
-    current_password: "",
+    current_password: "", // Used for validation, not sent to API
     phone: "1234567888",
     country_code: "+1",
     login_ip: "192.168.1.1",
@@ -41,17 +40,15 @@ export default function SignUp({
     (state) => state.auth
   );
 
-  // Add useEffect to show toasts for signup and OTP verification
   useEffect(() => {
     if (error) {
-      toast.error(error); // Show error toast
-      dispatch(clearError()); // Clear error after showing toast
+      toast.error(error);
+      dispatch(clearError());
     }
     if (isAuthenticated && showOtpForm) {
-      toast.success("OTP verified successfully!"); // Show success toast for OTP
+      toast.success("OTP verified successfully!");
     }
     if (!error && showOtpForm && !loading && !isAuthenticated) {
-      // This condition avoids duplicate toasts; only show signup success when OTP form is shown
       toast.success("Signup successful! Please verify OTP.");
     }
   }, [error, isAuthenticated, showOtpForm, loading, dispatch]);
@@ -66,19 +63,37 @@ export default function SignUp({
     e.preventDefault();
     if (
       userProfile.username === "" ||
-      userProfile.fullname === "" ||
       userProfile.email === "" ||
       userProfile.password === "" ||
       userProfile.current_password === ""
     ) {
-      toast.warn("Please fill all fields"); // Replace alert with toast
+      toast.warn("Please fill all fields");
       return;
     }
     if (userProfile.password !== userProfile.current_password) {
-      toast.warn("Passwords do not match"); // Replace alert with toast
+      toast.warn("Passwords do not match");
       return;
     }
-    dispatch(registerUser(userProfile)).then((result) => {
+
+    // Create payload matching Postman
+    const payload = {
+      username: userProfile.username,
+      email: userProfile.email,
+      password: userProfile.password,
+      phone: userProfile.phone,
+      country_code: userProfile.country_code,
+      login_ip: userProfile.login_ip,
+      role: userProfile.role,
+      device_type: userProfile.device_type,
+      industry: userProfile.industry,
+      location: userProfile.location,
+      bio: userProfile.bio,
+      website: userProfile.website,
+      profile_category_type: userProfile.profile_category_type,
+      interest_id: userProfile.interest_id,
+    };
+
+    dispatch(registerUser(payload)).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
         setShowOtpForm(true);
       }
@@ -88,7 +103,7 @@ export default function SignUp({
   function onSubmitOtp(e: React.FormEvent) {
     e.preventDefault();
     if (otp === "") {
-      toast.warn("Please enter OTP"); // Replace alert with toast
+      toast.warn("Please enter OTP");
       return;
     }
     dispatch(verifyOtp({ email: userProfile.email, otp }));
@@ -106,14 +121,6 @@ export default function SignUp({
             value={userProfile.username}
             type="text"
             placeholder="Username"
-            onChange={userSubmitProfile}
-            className="black-bg"
-          />
-          <Input
-            name="fullname"
-            value={userProfile.fullname}
-            type="text"
-            placeholder="Full Name"
             onChange={userSubmitProfile}
             className="black-bg"
           />

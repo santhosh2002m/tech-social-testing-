@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Add useEffect
+import { useState, useEffect } from "react";
 import { Form, Input } from "reactstrap";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { loginUser, forgotPassword, clearError } from "../../store/authSlice";
 import "../../styles/custom.scss";
-import { toast } from "react-toastify"; // Add toast import
+import { toast } from "react-toastify";
 
 export default function SignIn({
   isRightPanelActive,
@@ -29,27 +29,25 @@ export default function SignIn({
     (state) => state.auth
   );
 
-  // Add useEffect to show toasts for login success/failure and forgot password
   useEffect(() => {
     if (error) {
-      toast.error(error); // Show error toast
-      dispatch(clearError()); // Clear error after showing toast
+      toast.error(error);
+      dispatch(clearError());
     }
     if (isAuthenticated && !showForgotPassword) {
-      toast.success("Login successful!"); // Show success toast
+      toast.success("Login successful!");
     }
   }, [error, isAuthenticated, dispatch, showForgotPassword]);
 
-  // Show toast for forgot password success
   const handleForgotPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (forgotpas === "") {
-      toast.warn("Please enter your email"); // Replace alert with toast
+      toast.warn("Please enter your email");
       return;
     }
     dispatch(forgotPassword(forgotpas)).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
-        toast.success("Password reset link sent!"); // Show success toast
+        toast.success("Password reset link sent!");
         setShowForgotPassword(false);
         setForgotPas("");
       }
@@ -65,10 +63,14 @@ export default function SignIn({
   function onSubmitCredentials(e: React.FormEvent) {
     e.preventDefault();
     if (credential.email === "" || credential.password === "") {
-      toast.warn("Please fill all fields"); // Replace alert with toast
+      toast.warn("Please fill all fields");
       return;
     }
-    dispatch(loginUser(credential));
+    dispatch(loginUser(credential)).then((result) => {
+      if (result.meta.requestStatus === "rejected") {
+        console.error("Login failed:", result.payload); // Log for debugging
+      }
+    });
   }
 
   return (

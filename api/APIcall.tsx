@@ -1,10 +1,8 @@
-// utils/axiosCall.ts
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import secureLocalStorage from "react-secure-storage";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://hpl56ugq69.execute-api.ca-central-1.amazonaws.com/dev";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://dev.techsocial.ai";
 const VERSION = "v1";
 
 interface AxiosCallConfig {
@@ -27,18 +25,19 @@ export default async function axiosCall<T>({
   if (CONFIG) {
     headers["Content-Type"] = "multipart/form-data";
   } else {
-    headers["Content-Type"] = "application/json;charset=UTF-8";
+    headers["Content-Type"] = "application/json"; // Remove charset=UTF-8
   }
 
   const options: AxiosRequestConfig = {
     method: METHOD,
-    url: `${API_URL}/${VERSION}/${ENDPOINT}`,
+    url: `${API_URL}/api/web/index.php/${VERSION}/${ENDPOINT}`, // Correct URL structure
     data: PAYLOAD,
     headers,
   };
 
   const token = secureLocalStorage.getItem("token") as string | null;
-  if (token) {
+  if (token && ENDPOINT !== "users/register" && ENDPOINT !== "users/login") {
+    // Only include token for non-auth endpoints
     options.headers = {
       ...options.headers,
       Authorization: `Bearer ${token}`,
@@ -48,6 +47,13 @@ export default async function axiosCall<T>({
   try {
     return await axios.request<T>(options);
   } catch (error: any) {
-    throw error;
+    // Enhance error logging for debugging
+    console.error("API Error:", {
+      url: options.url,
+      method: METHOD,
+      payload: PAYLOAD,
+      error: error.response?.data || error.message,
+    });
+    throw error.response?.data || error;
   }
 }

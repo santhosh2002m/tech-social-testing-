@@ -1,175 +1,166 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosCall from "../api/APIcall";
-import secureLocalStorage from "react-secure-storage";
 import {
-  AuthResponse,
   SignUpFormData,
   SignInFormData,
+  AuthResponse,
 } from "../type/AuthTypes";
 
+export const registerUser = createAsyncThunk<
+  AuthResponse,
+  SignUpFormData,
+  { rejectValue: string }
+>("auth/registerUser", async (userData, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<AuthResponse>({
+      ENDPOINT: "users/register",
+      METHOD: "POST",
+      PAYLOAD: userData,
+    });
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to register user");
+  }
+});
+
+export const loginUser = createAsyncThunk<
+  AuthResponse,
+  SignInFormData,
+  { rejectValue: string }
+>("auth/loginUser", async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<AuthResponse>({
+      ENDPOINT: "users/login",
+      METHOD: "POST",
+      PAYLOAD: credentials,
+    });
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to login");
+  }
+});
+
+export const verifyOtp = createAsyncThunk<
+  AuthResponse,
+  { email: string; otp: string },
+  { rejectValue: string }
+>("auth/verifyOtp", async ({ email, otp }, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<AuthResponse>({
+      ENDPOINT: "users/verify-otp", // Adjust if endpoint differs
+      METHOD: "POST",
+      PAYLOAD: { email, otp },
+    });
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to verify OTP");
+  }
+});
+
+export const forgotPassword = createAsyncThunk<
+  { message: string },
+  string,
+  { rejectValue: string }
+>("auth/forgotPassword", async (email, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<{ message: string }>({
+      ENDPOINT: "users/forgot-password", // Adjust if endpoint differs
+      METHOD: "POST",
+      PAYLOAD: { email },
+    });
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.message || "Failed to send password reset link"
+    );
+  }
+});
+
 interface AuthState {
-  user: { username?: string; email?: string } | null;
-  token: string | null;
   isAuthenticated: boolean;
+  user: { username: string; email: string; id?: number } | null;
+  token: string | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
+  isAuthenticated: false,
   user: null,
-  token: secureLocalStorage.getItem("token") as string | null,
-  isAuthenticated: !!secureLocalStorage.getItem("token"),
+  token: null,
   loading: false,
   error: null,
 };
-
-export const registerUser = createAsyncThunk(
-  "auth/register",
-  async (userData: SignUpFormData, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<AuthResponse>({
-        ENDPOINT: "users/register",
-        METHOD: "POST",
-        data: userData,
-      });
-      secureLocalStorage.setItem("token", response.data.data.token);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Registration failed"
-      );
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
-  "auth/login",
-  async (credentials: SignInFormData, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<AuthResponse>({
-        ENDPOINT: "users/login",
-        METHOD: "POST",
-        data: credentials,
-      });
-      secureLocalStorage.setItem("token", response.data.data.token);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
-    }
-  }
-);
-
-export const verifyOtp = createAsyncThunk(
-  "auth/verifyOtp",
-  async (
-    { email, otp }: { email: string; otp: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axiosCall<AuthResponse>({
-        ENDPOINT: "users/verify-otp",
-        METHOD: "POST",
-        data: { email, otp },
-      });
-      secureLocalStorage.setItem("token", response.data.data.token);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "OTP verification failed"
-      );
-    }
-  }
-);
-
-export const forgotPassword = createAsyncThunk(
-  "auth/forgotPassword",
-  async (email: string, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<{ message: string }>({
-        ENDPOINT: "users/forgot-password",
-        METHOD: "POST",
-        data: { email },
-      });
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to send reset link"
-      );
-    }
-  }
-);
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    clearError(state) {
+    clearError: (state) => {
       state.error = null;
-    },
-    logout(state) {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      secureLocalStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
-        state.isAuthenticated = true;
-      })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(loginUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
-        state.isAuthenticated = true;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(verifyOtp.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(verifyOtp.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
-        state.isAuthenticated = true;
-      })
-      .addCase(verifyOtp.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(forgotPassword.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(forgotPassword.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(forgotPassword.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      });
+    // Register User
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(registerUser.fulfilled, (state, action) => {
+      state.loading = false;
+      // Don't set isAuthenticated until OTP is verified
+    });
+    builder.addCase(registerUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Registration failed";
+    });
+
+    // Login User
+    builder.addCase(loginUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.isAuthenticated = true;
+      state.user = action.payload.data.user;
+      state.token = action.payload.data.token;
+    });
+    builder.addCase(loginUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Login failed";
+    });
+
+    // Verify OTP
+    builder.addCase(verifyOtp.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(verifyOtp.fulfilled, (state, action) => {
+      state.loading = false;
+      state.isAuthenticated = true;
+      state.user = action.payload.data.user;
+      state.token = action.payload.data.token;
+    });
+    builder.addCase(verifyOtp.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "OTP verification failed";
+    });
+
+    // Forgot Password
+    builder.addCase(forgotPassword.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(forgotPassword.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(forgotPassword.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Failed to send reset link";
+    });
   },
 });
 
-export const { clearError, logout } = authSlice.actions;
+export const { clearError } = authSlice.actions;
 export default authSlice.reducer;
