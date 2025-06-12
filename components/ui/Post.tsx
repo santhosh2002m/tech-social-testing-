@@ -1,8 +1,8 @@
-// components/ui/Post.tsx
-import Image, { StaticImageData } from "next/image";
+// components/ui/Post.tsx (for reference)
+import Image from "next/image";
 import Link from "next/link";
 import PostAction from "./PostAction";
-import { PostData, PollOption } from "../../data/postData";
+import { PostData, PollOption } from "../../data/postData"; // Importing from postData.ts
 
 interface PostProps {
   post: PostData;
@@ -17,8 +17,8 @@ const Post = ({ post }: PostProps) => {
     mediaType,
     poll,
     postGallary,
-    authorName = "Unknown User", // Fallback for authorName
-    authorAvt = "/default-avatar.png", // Fallback for avatar
+    authorName = "Unknown User",
+    authorAvt = "/default-avatar.png",
   } = post;
 
   const renderMedia = () => {
@@ -58,7 +58,12 @@ const Post = ({ post }: PostProps) => {
       );
     }
 
-    const media = postGallary.length > 0 ? postGallary : image ? [image] : [];
+    const media =
+      postGallary && postGallary.length > 0
+        ? postGallary.map((item) => item.filename)
+        : image
+        ? [image]
+        : [];
 
     if (!media || media.length === 0) {
       return <p className="text-danger">Media not found</p>;
@@ -84,18 +89,15 @@ const Post = ({ post }: PostProps) => {
                 />
               </div>
               <div className="single d-grid gap-3">
-                {
-                  (media.slice(1).map,
-                  len((src, index) => (
-                    <Image
-                      key={index}
-                      src={src}
-                      alt="post media"
-                      width={150}
-                      height={150}
-                    />
-                  )))
-                }
+                {media.slice(1).map((src, index) => (
+                  <Image
+                    key={index}
+                    src={src}
+                    alt="post media"
+                    width={150}
+                    height={150}
+                  />
+                ))}
               </div>
             </>
           ) : (
@@ -133,8 +135,7 @@ const Post = ({ post }: PostProps) => {
             style={{ border: "none" }}
           >
             Your browser does not support PDFs. Please download the PDF to view
-            it:
-            <a href={media[0]}>Download PDF</a>.
+            it: <a href={media[0]}>Download PDF</a>.
           </iframe>
         </div>
       );

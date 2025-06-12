@@ -1,3 +1,4 @@
+// app/layout.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -9,7 +10,7 @@ import PostPopups from "@/components/modals/PostPopups";
 import NavBar from "@/components/navbar/NavBar";
 import Preloader from "@/components/preloader/Preloader";
 import ScrollToTop from "@/components/scrollToTop/ScrollToTop";
-import store from "@/store/index";
+import { store } from "@/store/index";
 import "react-modal-video/css/modal-video.css";
 import "slick-carousel/slick/slick.css";
 import "@/styles/globals.scss";

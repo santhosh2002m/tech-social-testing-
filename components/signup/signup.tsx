@@ -7,6 +7,11 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { registerUser, verifyOtp, clearError } from "../../store/authSlice";
 import "../../styles/custom.scss";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+
+// Explicitly type the icons as React components
+const FiEyeIcon: React.FC = FiEye as React.FC;
+const FiEyeOffIcon: React.FC = FiEyeOff as React.FC;
 
 export default function SignUp({
   isRightPanelActive,
@@ -20,7 +25,7 @@ export default function SignUp({
     username: "",
     email: "",
     password: "",
-    current_password: "", // Used for validation, not sent to API
+    current_password: "",
     phone: "1234567888",
     country_code: "+1",
     login_ip: "192.168.1.1",
@@ -36,6 +41,7 @@ export default function SignUp({
   const [otp, setOtp] = useState("");
 
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { loading, error, isAuthenticated } = useAppSelector(
     (state) => state.auth
   );
@@ -47,11 +53,31 @@ export default function SignUp({
     }
     if (isAuthenticated && showOtpForm) {
       toast.success("OTP verified successfully!");
+      setUserProfile({
+        username: "",
+        email: "",
+        password: "",
+        current_password: "",
+        phone: "1234567888",
+        country_code: "+1",
+        login_ip: "192.168.1.1",
+        role: 3,
+        device_type: "mobile",
+        industry: "IT",
+        location: "Bengaluru",
+        bio: "Test is Test",
+        website: "www.test.com",
+        profile_category_type: 2,
+        interest_id: "1,2,3,4,5",
+      });
+      setOtp("");
+      setShowOtpForm(false);
+      router.push("/dashboard");
     }
     if (!error && showOtpForm && !loading && !isAuthenticated) {
       toast.success("Signup successful! Please verify OTP.");
     }
-  }, [error, isAuthenticated, showOtpForm, loading, dispatch]);
+  }, [error, isAuthenticated, showOtpForm, loading, dispatch, router]);
 
   function userSubmitProfile(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -75,7 +101,6 @@ export default function SignUp({
       return;
     }
 
-    // Create payload matching Postman
     const payload = {
       username: userProfile.username,
       email: userProfile.email,
@@ -142,7 +167,7 @@ export default function SignUp({
               className="black-bg"
             />
             <span onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <FiEyeOff /> : <FiEye />}
+              {showPassword ? <FiEyeOffIcon /> : <FiEyeIcon />}
             </span>
           </div>
           <div className="password-container">
@@ -155,7 +180,7 @@ export default function SignUp({
               className="black-bg"
             />
             <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-              {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+              {showConfirmPassword ? <FiEyeOffIcon /> : <FiEyeIcon />}
             </span>
           </div>
           <div className="checkbox-container">

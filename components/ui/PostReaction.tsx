@@ -2,7 +2,7 @@
 "use client";
 
 import { useAppSelector } from "../../store/hooks";
-import { PostData } from "../../data/postData";
+import { Post as PostType } from "../../type/PostTypes";
 
 interface PostReactionProps {
   reaction?: string;
@@ -19,7 +19,7 @@ const PostReaction: React.FC<PostReactionProps> = ({
 }) => {
   const post = useAppSelector((state) =>
     state.posts.posts.find((p) => p.id === postId)
-  ) as PostData | undefined;
+  ) as PostType | undefined;
 
   return (
     <>

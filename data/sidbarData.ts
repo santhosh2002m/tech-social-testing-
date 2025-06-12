@@ -23,11 +23,12 @@ export const friendLeftMenu = [
 ];
 
 // data/sidbarData.ts
-export const homeLeftMenu = [
+// data/sidbarData.ts
+export const homeLeftMenu: [string, string, string][] = [
   ["home", "Home", "/"],
   ["chat", "Chats", "/chats"],
   ["add", "Post", "/posts"],
-  ["travel_explore", "Explore AI", "/explore-ai"], // Updated icon for Explore AI
+  ["travel_explore", "Explore AI", "/explore-ai"],
   ["thumb_up_alt", "Liked", "/liked"],
   ["reply", "Shared ", "/shared"],
   ["mode_comment", "Commented ", "/commented"],

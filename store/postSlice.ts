@@ -1,10 +1,9 @@
-// store/postSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosCall from "../api/APIcall";
-import { PostData } from "../data/postData";
+import { Post, PostResponse } from "../type/PostTypes";
 
 interface PostState {
-  posts: PostData[];
+  posts: Post[];
   loading: boolean;
   error: string | null;
 }
@@ -15,117 +14,114 @@ const initialState: PostState = {
   error: null,
 };
 
-interface PostResponse {
-  status: number;
-  statusText: string;
-  message: string;
-  data: {
-    posts: PostData[];
-  };
-}
-
-export const fetchSavedPosts = createAsyncThunk(
-  "posts/fetchSavedPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts/view-saved-posts",
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch saved posts"
-      );
-    }
+// Explicitly define the return type for the thunk
+export const fetchSavedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchSavedPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "posts/view-saved-posts",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch saved posts"
+    );
   }
-);
+});
 
-// Placeholder for other endpoints (assuming they exist)
-export const fetchLikedPosts = createAsyncThunk(
-  "posts/fetchLikedPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts/view-liked-posts", // Hypothetical endpoint
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch liked posts"
-      );
-    }
+export const fetchLikedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchLikedPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "posts/view-liked-posts",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch liked posts"
+    );
   }
-);
+});
 
-export const fetchSharedPosts = createAsyncThunk(
-  "posts/fetchSharedPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts/view-shared-posts", // Hypothetical endpoint
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch shared posts"
-      );
-    }
+export const fetchSharedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchSharedPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "posts/view-shared-posts",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch shared posts"
+    );
   }
-);
+});
 
-export const fetchCommentedPosts = createAsyncThunk(
-  "posts/fetchCommentedPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts/view-commented-posts", // Hypothetical endpoint
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch commented posts"
-      );
-    }
+export const fetchCommentedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchCommentedPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "posts/view-commented-posts",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch commented posts"
+    );
   }
-);
+});
 
-export const fetchMentionedPosts = createAsyncThunk(
-  "posts/fetchMentionedPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts/view-mentioned-posts", // Hypothetical endpoint
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch mentioned posts"
-      );
-    }
+export const fetchMentionedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchMentionedPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "posts/view-mentioned-posts",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch mentioned posts"
+    );
   }
-);
+});
 
-export const fetchAllPosts = createAsyncThunk(
-  "posts/fetchAllPosts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosCall<PostResponse>({
-        ENDPOINT: "posts", // Assuming a general posts endpoint
-        METHOD: "GET",
-      });
-      return response.data.data.posts;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch posts"
-      );
-    }
+export const fetchAllPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchAllPosts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosCall<PostResponse>({
+      ENDPOINT: "users/profile",
+      METHOD: "GET",
+    });
+    return response.data.data.posts ?? []; // Return empty array if posts is undefined
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch posts"
+    );
   }
-);
+});
 
 const postSlice = createSlice({
   name: "posts",
@@ -143,10 +139,12 @@ const postSlice = createSlice({
       })
       .addCase(fetchSavedPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.map((post) => ({
-          ...post,
-          isSaved: true,
-        }));
+        state.posts = action.payload
+          ? action.payload.map((post) => ({
+              ...post,
+              isSaved: true,
+            }))
+          : [];
       })
       .addCase(fetchSavedPosts.rejected, (state, action) => {
         state.loading = false;
@@ -158,10 +156,12 @@ const postSlice = createSlice({
       })
       .addCase(fetchLikedPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.map((post) => ({
-          ...post,
-          isLiked: true,
-        }));
+        state.posts = action.payload
+          ? action.payload.map((post) => ({
+              ...post,
+              isLiked: true,
+            }))
+          : [];
       })
       .addCase(fetchLikedPosts.rejected, (state, action) => {
         state.loading = false;
@@ -173,10 +173,12 @@ const postSlice = createSlice({
       })
       .addCase(fetchSharedPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.map((post) => ({
-          ...post,
-          isShared: true,
-        }));
+        state.posts = action.payload
+          ? action.payload.map((post) => ({
+              ...post,
+              isShared: true,
+            }))
+          : [];
       })
       .addCase(fetchSharedPosts.rejected, (state, action) => {
         state.loading = false;
@@ -188,10 +190,12 @@ const postSlice = createSlice({
       })
       .addCase(fetchCommentedPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.map((post) => ({
-          ...post,
-          isCommented: true,
-        }));
+        state.posts = action.payload
+          ? action.payload.map((post) => ({
+              ...post,
+              isCommented: true,
+            }))
+          : [];
       })
       .addCase(fetchCommentedPosts.rejected, (state, action) => {
         state.loading = false;
@@ -203,10 +207,12 @@ const postSlice = createSlice({
       })
       .addCase(fetchMentionedPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload.map((post) => ({
-          ...post,
-          isMentioned: true,
-        }));
+        state.posts = action.payload
+          ? action.payload.map((post) => ({
+              ...post,
+              isMentioned: true,
+            }))
+          : [];
       })
       .addCase(fetchMentionedPosts.rejected, (state, action) => {
         state.loading = false;
@@ -218,7 +224,7 @@ const postSlice = createSlice({
       })
       .addCase(fetchAllPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload;
+        state.posts = action.payload ?? [];
       })
       .addCase(fetchAllPosts.rejected, (state, action) => {
         state.loading = false;

@@ -6,8 +6,8 @@ import SignUp from "../../components/signup/signup";
 import logo from "/public/images/logo.png";
 import "../../styles/custom.scss";
 import Image from "next/image";
-import { ToastContainer } from "react-toastify"; // Add import
-import "react-toastify/dist/ReactToastify.css"; // Add toastify CSS
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosCall from "../api/APIcall";
+import secureLocalStorage from "react-secure-storage";
 import {
   SignUpFormData,
   SignInFormData,
@@ -47,7 +48,7 @@ export const verifyOtp = createAsyncThunk<
 >("auth/verifyOtp", async ({ email, otp }, { rejectWithValue }) => {
   try {
     const response = await axiosCall<AuthResponse>({
-      ENDPOINT: "users/verify-otp", // Adjust if endpoint differs
+      ENDPOINT: "users/verify-otp",
       METHOD: "POST",
       PAYLOAD: { email, otp },
     });
@@ -64,7 +65,7 @@ export const forgotPassword = createAsyncThunk<
 >("auth/forgotPassword", async (email, { rejectWithValue }) => {
   try {
     const response = await axiosCall<{ message: string }>({
-      ENDPOINT: "users/forgot-password", // Adjust if endpoint differs
+      ENDPOINT: "users/forgot-password",
       METHOD: "POST",
       PAYLOAD: { email },
     });
@@ -99,23 +100,26 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.token = null;
+      secureLocalStorage.removeItem("loginToken");
+    },
   },
   extraReducers: (builder) => {
-    // Register User
     builder.addCase(registerUser.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.loading = false;
-      // Don't set isAuthenticated until OTP is verified
     });
     builder.addCase(registerUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Registration failed";
     });
 
-    // Login User
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -125,13 +129,13 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload.data.user;
       state.token = action.payload.data.token;
+      secureLocalStorage.setItem("loginToken", action.payload.data.token);
     });
     builder.addCase(loginUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Login failed";
     });
 
-    // Verify OTP
     builder.addCase(verifyOtp.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -141,13 +145,13 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload.data.user;
       state.token = action.payload.data.token;
+      secureLocalStorage.setItem("loginToken", action.payload.data.token);
     });
     builder.addCase(verifyOtp.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "OTP verification failed";
     });
 
-    // Forgot Password
     builder.addCase(forgotPassword.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -162,5 +166,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, logout } = authSlice.actions;
 export default authSlice.reducer;

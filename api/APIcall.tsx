@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import secureLocalStorage from "react-secure-storage";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://dev.techsocial.ai";
+const API_URL = "https://dev.techsocial.ai/api/web/index.php";
 const VERSION = "v1";
 
 interface AxiosCallConfig {
@@ -24,20 +23,20 @@ export default async function axiosCall<T>({
 
   if (CONFIG) {
     headers["Content-Type"] = "multipart/form-data";
+    headers["Accept"] = "*/*";
   } else {
-    headers["Content-Type"] = "application/json"; // Remove charset=UTF-8
+    headers["Content-Type"] = "application/json;charset=UTF-8";
   }
 
   const options: AxiosRequestConfig = {
     method: METHOD,
-    url: `${API_URL}/api/web/index.php/${VERSION}/${ENDPOINT}`, // Correct URL structure
+    url: `${API_URL}/${VERSION}/${ENDPOINT}`,
     data: PAYLOAD,
     headers,
   };
 
-  const token = secureLocalStorage.getItem("token") as string | null;
-  if (token && ENDPOINT !== "users/register" && ENDPOINT !== "users/login") {
-    // Only include token for non-auth endpoints
+  const token = secureLocalStorage.getItem("loginToken") || null;
+  if (token !== null) {
     options.headers = {
       ...options.headers,
       Authorization: `Bearer ${token}`,
@@ -45,15 +44,13 @@ export default async function axiosCall<T>({
   }
 
   try {
-    return await axios.request<T>(options);
+    const response = await axios.request<T>(options);
+    return response;
   } catch (error: any) {
-    // Enhance error logging for debugging
-    console.error("API Error:", {
-      url: options.url,
-      method: METHOD,
-      payload: PAYLOAD,
-      error: error.response?.data || error.message,
-    });
-    throw error.response?.data || error;
+    if (error.response?.status === 401) {
+      secureLocalStorage.removeItem("loginToken");
+      throw new Error("Session expired. Please log in again.");
+    }
+    throw error;
   }
 }

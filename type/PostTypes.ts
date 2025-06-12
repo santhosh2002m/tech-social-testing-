@@ -39,13 +39,42 @@ export interface Post {
   poll_id: number | null;
   display_whose: number;
   share_link: string;
-  postGallary: string[];
+  postGallary: {
+    type: number;
+    media_type: number;
+    filename: string;
+    video_thumb: string;
+    is_default: number;
+  }[];
   is_like: number;
   is_reported: number;
   hashtags: string[];
   mentionUsers: string[];
   is_promotion: number;
   isSaved?: boolean;
+  isLiked?: boolean;
+  isCommented?: boolean;
+  isShared?: boolean;
+  isMentioned?: boolean;
+  authorName?: string;
+  authorAvt?: string;
+  mediaType?: string;
+  poll?: PollOption[];
+  comments?: Comment[];
+}
+
+export interface PollOption {
+  id: number;
+  text: string;
+  votes: number;
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  replies: Comment[];
+  authorName?: string; // Added
+  authorAvt?: string; // Added (string, since we'll pass a URL to Image)
 }
 
 export interface PostResponse {

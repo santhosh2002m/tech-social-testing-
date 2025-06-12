@@ -1,13 +1,11 @@
 export interface SignUpFormData {
   username: string;
-  fullname: string;
   email: string;
   password: string;
-  current_password: string;
   phone?: string;
   country_code?: string;
   login_ip?: string;
-  role?: number;
+  role?: number | string;
   device_type?: string;
   industry?: string;
   location?: string;

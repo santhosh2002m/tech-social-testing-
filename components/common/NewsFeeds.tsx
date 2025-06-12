@@ -18,6 +18,7 @@ import PostReaction from "../ui/PostReaction";
 import SiblingComment from "../ui/SiblingComment";
 import WriteComment from "../ui/WriteComment";
 import { toast } from "react-toastify";
+import { Post as PostType } from "../../type/PostTypes";
 
 interface NewsFeedsProps {
   clss?: string;
@@ -39,7 +40,6 @@ const NewsFeeds: React.FC<NewsFeedsProps> = ({ clss = "", reaction = "" }) => {
   }, [error, dispatch]);
 
   useEffect(() => {
-    // Fetch posts based on reaction prop
     switch (reaction) {
       case "/saved":
         dispatch(fetchSavedPosts());
@@ -56,8 +56,16 @@ const NewsFeeds: React.FC<NewsFeedsProps> = ({ clss = "", reaction = "" }) => {
       case "/mentioned":
         dispatch(fetchMentionedPosts());
         break;
-      case "/" || "/posts":
+      case "/":
+      case "/posts":
         dispatch(fetchAllPosts());
+        break;
+      case "/chats":
+      case "/explore-ai":
+      case "/faq":
+      case "/support":
+      case "/subscription":
+        // Placeholder for non-post pages
         break;
       default:
         dispatch(fetchAllPosts());
@@ -81,8 +89,17 @@ const NewsFeeds: React.FC<NewsFeedsProps> = ({ clss = "", reaction = "" }) => {
         <p className="text-center mdtxt">
           No {reaction.replace("/", "") || "posts"} yet
         </p>
+      ) : reaction === "/chats" ||
+        reaction === "/explore-ai" ||
+        reaction === "/faq" ||
+        reaction === "/support" ||
+        reaction === "/subscription" ? (
+        <p className="text-center mdtxt">
+          {reaction.replace("/", "").replace("-", " ").toUpperCase()} page
+          coming soon
+        </p>
       ) : (
-        posts.map((post) => {
+        posts.map((post: PostType) => {
           const isCommentSectionOpen = openCommentSections[post.id] || false;
 
           return (
@@ -102,7 +119,7 @@ const NewsFeeds: React.FC<NewsFeedsProps> = ({ clss = "", reaction = "" }) => {
                       <div key={comment.id} className="comments-area mt-5">
                         <div className="single-comment-area ms-1 ms-xxl-15">
                           <ParentComment comment={comment} />
-                          {comment?.replies.map((reply, i, arr) => (
+                          {comment?.replies?.map((reply, i, arr) => (
                             <SiblingComment
                               key={reply.id}
                               clss={

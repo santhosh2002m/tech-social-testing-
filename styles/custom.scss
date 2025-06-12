@@ -362,7 +362,7 @@ body {
       &:-webkit-autofill:active {
         -webkit-box-shadow: 0 0 0 30px #2a3435 inset !important;
         -webkit-text-fill-color: $white !important;
-        background-color: #2a3435 !important;
+        // background-color: #2a3435 !important;
         transition: background-color 5000s ease-in-out 0s;
       }
 
@@ -526,7 +526,7 @@ body {
   &:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #2a3435 inset !important;
     -webkit-text-fill-color: $white !important;
-    background-color: #2a3435 !important;
+    // background-color: #2a3435 !important;
     transition: background-color 5000s ease-in-out 0s;
   }
 
@@ -555,4 +555,10 @@ body {
 .profile-box img {
   border-radius: 50%;
   border: 2px solid $gradient-start; // 2px solid orange (#ef623a)
+}
+
+.form-control:focus {
+  color: white !important;
+
+  border-color: #ef623a !important;
 }
